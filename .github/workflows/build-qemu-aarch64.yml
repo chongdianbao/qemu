@@ -29,7 +29,6 @@ jobs:
           libfdt-dev \
           libslirp-dev \
           zlib1g-dev \
-          libmount-dev \
           python3-pip \
           python3-venv \
           flex \
@@ -49,15 +48,15 @@ jobs:
           --disable-docs \
           --disable-tools \
           --disable-guest-agent \
+          --disable-tests \
+          --disable-benchmarks \
+          --disable-user \
           --disable-gtk \
           --disable-sdl \
           --disable-vnc \
           --disable-spice \
           --disable-xen \
           --disable-kvm \
-          --disable-user \
-          --disable-linux-user \
-          --disable-bsd-user \
           --disable-plugins \
           --disable-brlapi \
           --disable-rdma \
