@@ -29,6 +29,7 @@ jobs:
           libfdt-dev \
           libslirp-dev \
           zlib1g-dev \
+          libmount-dev \
           python3-pip \
           python3-venv \
           flex \
@@ -47,6 +48,7 @@ jobs:
           --static \
           --disable-docs \
           --disable-tools \
+          --disable-guest-agent \
           --disable-gtk \
           --disable-sdl \
           --disable-vnc \
