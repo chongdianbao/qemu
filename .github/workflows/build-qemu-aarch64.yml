@@ -81,7 +81,6 @@ jobs:
           --target-list=aarch64-softmmu \
           --static \
           --enable-system \
-          --enable-can \
           --enable-slirp \
           --enable-tcg \
           --disable-user \
@@ -185,7 +184,7 @@ jobs:
           Build configuration:
           - Target: aarch64-softmmu
           - Static linking enabled
-          - CAN support enabled
+          - CAN support (kvaser_pci) included
           - TCG (Tiny Code Generator) enabled
           
           Usage:
