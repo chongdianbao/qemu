@@ -28,6 +28,7 @@
 #include "qemu/osdep.h"
 #include "qemu/log.h"
 #include "qemu/bitops.h"
+#include <string.h>
 #include "hw/core/irq.h"
 #include "migration/vmstate.h"
 #include "net/can_emu.h"
@@ -75,6 +76,15 @@ void can_sja_hardware_reset(CanSJA1000State *s)
     s->control     = 0x01;
     s->status_bas  = 0x0c;
     s->interrupt_bas = 0x00;
+
+    /* Clear filter and code_mask arrays */
+    memset(s->filter, 0, sizeof(s->filter));
+    memset(s->code_mask, 0, sizeof(s->code_mask));
+
+    /* Clear buffers */
+    memset(s->tx_buff, 0, sizeof(s->tx_buff));
+    memset(s->rx_buff, 0, sizeof(s->rx_buff));
+    s->rx_ptr = 0;
 
     qemu_irq_lower(s->irq);
 }

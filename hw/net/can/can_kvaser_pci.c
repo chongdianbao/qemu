@@ -109,6 +109,13 @@ static void kvaser_pci_reset(DeviceState *dev)
     CanSJA1000State *s = &d->sja_state;
 
     can_sja_hardware_reset(s);
+
+    /* Reset PCI-side state */
+    d->s5920_intcsr = 0;
+    d->s5920_irqstate = 0;
+
+    /* Ensure IRQ line is deasserted */
+    pci_set_irq(&d->dev, 0);
 }
 
 static uint64_t kvaser_pci_s5920_io_read(void *opaque, hwaddr addr,
