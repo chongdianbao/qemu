@@ -26,46 +26,11 @@ jobs:
           pkg-config \
           libglib2.0-dev \
           libpixman-1-dev \
-          libncursesw5-dev \
-          libncurses-dev \
-          libslirp-dev \
-          libusb-1.0-0-dev \
-          libasound2-dev \
-          libpulse-dev \
-          libbrlapi-dev \
-          libcap-ng-dev \
-          libcurl4-gnutls-dev \
           libfdt-dev \
-          libfuse3-dev \
-          libgbm-dev \
-          libgnutls28-dev \
-          libgtk-3-dev \
-          libibverbs-dev \
-          libiscsi-dev \
-          libjpeg-dev \
-          liblzo2-dev \
-          libnfs-dev \
-          libnuma-dev \
-          libpam0g-dev \
-          libpng-dev \
-          librbd-dev \
-          librdmacm-dev \
-          libsasl2-dev \
-          libsdl2-dev \
-          libseccomp-dev \
-          libsnappy-dev \
-          libspice-protocol-dev \
-          libspice-server-dev \
-          libssh-dev \
-          liburcu-dev \
-          libvdeplug-dev \
-          libvte-2.91-dev \
-          libxen-dev \
-          libzstd-dev \
-          meson \
+          libslirp-dev \
+          zlib1g-dev \
           python3-pip \
           python3-venv \
-          zlib1g-dev \
           flex \
           bison
 
@@ -80,18 +45,20 @@ jobs:
         ../configure \
           --target-list=aarch64-softmmu \
           --static \
-          --enable-system \
-          --enable-slirp \
-          --enable-tcg \
-          --disable-user \
           --disable-docs \
+          --disable-tools \
           --disable-gtk \
           --disable-sdl \
           --disable-vnc \
+          --disable-spice \
           --disable-xen \
+          --disable-kvm \
+          --disable-user \
+          --disable-linux-user \
+          --disable-bsd-user \
+          --disable-plugins \
           --disable-brlapi \
           --disable-rdma \
-          --disable-pvrdma \
           --disable-libiscsi \
           --disable-libnfs \
           --disable-libssh \
@@ -103,31 +70,24 @@ jobs:
           --disable-glusterfs \
           --disable-libusb \
           --disable-usb-redir \
-          --disable-debug-info \
-          --disable-spice \
           --disable-smartcard \
           --disable-libpmem \
           --disable-libdaxctl \
           --disable-alsa \
           --disable-pa \
+          --disable-oss \
+          --disable-dsound \
+          --disable-sndio \
           --disable-vde \
           --disable-netmap \
-          --disable-hax \
-          --disable-hvf \
-          --disable-whpx \
-          --disable-cocoa \
           --disable-curses \
           --disable-iconv \
           --disable-curl \
-          --disable-membarrier \
           --disable-vhost-net \
           --disable-vhost-crypto \
           --disable-vhost-user \
           --disable-vhost-kernel \
-          --disable-vhost-scsi \
-          --disable-vhost-vsock \
           --disable-qom-cast-debug \
-          --disable-tools \
           --disable-bochs \
           --disable-cloop \
           --disable-dmg \
@@ -136,15 +96,10 @@ jobs:
           --disable-vvfat \
           --disable-qed \
           --disable-parallels \
-          --disable-sheepdog \
           --disable-capstone \
           --disable-zstd \
           --disable-linux-io-uring \
           --disable-xkbcommon \
-          --disable-oss \
-          --disable-coreaudio \
-          --disable-dsound \
-          --disable-sndio \
           --disable-werror
 
     - name: Build QEMU
