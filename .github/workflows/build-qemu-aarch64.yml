@@ -48,8 +48,6 @@ jobs:
           --disable-docs \
           --disable-tools \
           --disable-guest-agent \
-          --disable-tests \
-          --disable-benchmarks \
           --disable-user \
           --disable-gtk \
           --disable-sdl \
