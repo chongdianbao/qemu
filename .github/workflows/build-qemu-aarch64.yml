@@ -1,0 +1,199 @@
+name: Build QEMU aarch64-static
+
+on:
+  push:
+    branches: [ master, main ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          ninja-build \
+          pkg-config \
+          libglib2.0-dev \
+          libpixman-1-dev \
+          libncursesw5-dev \
+          libncurses-dev \
+          libslirp-dev \
+          libusb-1.0-0-dev \
+          libasound2-dev \
+          libpulse-dev \
+          libbrlapi-dev \
+          libcap-ng-dev \
+          libcurl4-gnutls-dev \
+          libfdt-dev \
+          libfuse3-dev \
+          libgbm-dev \
+          libgnutls28-dev \
+          libgtk-3-dev \
+          libibverbs-dev \
+          libiscsi-dev \
+          libjpeg-dev \
+          liblzo2-dev \
+          libnfs-dev \
+          libnuma-dev \
+          libpam0g-dev \
+          libpng-dev \
+          librbd-dev \
+          librdmacm-dev \
+          libsasl2-dev \
+          libsdl2-dev \
+          libseccomp-dev \
+          libsnappy-dev \
+          libspice-protocol-dev \
+          libspice-server-dev \
+          libssh-dev \
+          liburcu-dev \
+          libvdeplug-dev \
+          libvte-2.91-dev \
+          libxen-dev \
+          libzstd-dev \
+          meson \
+          python3-pip \
+          python3-venv \
+          zlib1g-dev \
+          flex \
+          bison
+
+    - name: Install additional Python packages
+      run: |
+        pip3 install tomli
+
+    - name: Configure QEMU
+      run: |
+        mkdir -p build
+        cd build
+        ../configure \
+          --target-list=aarch64-softmmu \
+          --static \
+          --enable-system \
+          --enable-can \
+          --enable-slirp \
+          --enable-tcg \
+          --disable-user \
+          --disable-docs \
+          --disable-gtk \
+          --disable-sdl \
+          --disable-vnc \
+          --disable-xen \
+          --disable-brlapi \
+          --disable-rdma \
+          --disable-pvrdma \
+          --disable-libiscsi \
+          --disable-libnfs \
+          --disable-libssh \
+          --disable-rbd \
+          --disable-lzo \
+          --disable-snappy \
+          --disable-bzip2 \
+          --disable-seccomp \
+          --disable-glusterfs \
+          --disable-libusb \
+          --disable-usb-redir \
+          --disable-debug-info \
+          --disable-spice \
+          --disable-smartcard \
+          --disable-libpmem \
+          --disable-libdaxctl \
+          --disable-alsa \
+          --disable-pa \
+          --disable-vde \
+          --disable-netmap \
+          --disable-hax \
+          --disable-hvf \
+          --disable-whpx \
+          --disable-cocoa \
+          --disable-curses \
+          --disable-iconv \
+          --disable-curl \
+          --disable-membarrier \
+          --disable-vhost-net \
+          --disable-vhost-crypto \
+          --disable-vhost-user \
+          --disable-vhost-kernel \
+          --disable-vhost-scsi \
+          --disable-vhost-vsock \
+          --disable-qom-cast-debug \
+          --disable-tools \
+          --disable-bochs \
+          --disable-cloop \
+          --disable-dmg \
+          --disable-qcow1 \
+          --disable-vdi \
+          --disable-vvfat \
+          --disable-qed \
+          --disable-parallels \
+          --disable-sheepdog \
+          --disable-capstone \
+          --disable-zstd \
+          --disable-linux-io-uring \
+          --disable-xkbcommon \
+          --disable-oss \
+          --disable-coreaudio \
+          --disable-dsound \
+          --disable-sndio \
+          --disable-werror
+
+    - name: Build QEMU
+      run: |
+        cd build
+        make -j$(nproc)
+
+    - name: Check binary
+      run: |
+        file build/qemu-system-aarch64
+        ldd build/qemu-system-aarch64 2>/dev/null || echo "Static binary (no dynamic dependencies)"
+        ls -lh build/qemu-system-aarch64
+
+    - name: Create tarball
+      run: |
+        cd build
+        tar czvf qemu-system-aarch64-static.tar.gz qemu-system-aarch64
+        mv qemu-system-aarch64-static.tar.gz ../
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: qemu-system-aarch64-static
+        path: qemu-system-aarch64-static.tar.gz
+
+    - name: Create Release
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: qemu-system-aarch64-static.tar.gz
+        name: QEMU aarch64-static ${{ github.ref_name }}
+        body: |
+          Static build of QEMU system emulator for aarch64 target.
+          
+          Includes CAN device fixes for kvaser_pci device reset on guest reboot.
+          
+          Build configuration:
+          - Target: aarch64-softmmu
+          - Static linking enabled
+          - CAN support enabled
+          - TCG (Tiny Code Generator) enabled
+          
+          Usage:
+          ```bash
+          tar xzvf qemu-system-aarch64-static.tar.gz
+          ./qemu-system-aarch64 --help
+          ```
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
